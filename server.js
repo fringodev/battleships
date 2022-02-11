@@ -87,5 +87,3 @@ io.on('connection', socket => {
     socket.disconnect()
   }, 600000) // 10 minute limit per player
 })
-
-module.exports = app
