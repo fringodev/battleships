@@ -5,6 +5,7 @@ Welcome to another JavaScript Game walkthrough! In this game, we learn not only 
 
 Watch the full video here: https://youtu.be/U64vIhh0TyM
 
+changed port number to 3000
 
 
 In this walkthrough we will:
