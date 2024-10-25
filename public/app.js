@@ -74,6 +74,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Multiplayer
+  /**
+  * Initializes the multiplayer feature of the game using socket connections.
+  * @example
+  * startMultiPlayer()
+  * // No return value, side effects include DOM manipulation and socket.io event handling
+  * @param {Undefined} - This function does not accept any parameters.
+  * @returns {Undefined} This function does not return any value.
+  * @description
+  *   - Prepares event listeners for multiplayer game actions and handles socket.io events.
+  *   - Notifies players about their connection status and the state of other players.
+  *   - Facilitates in-game actions like ready status and firing upon enemy squares.
+  *   - Performs DOM updates to reflect the state changes in the multiplayer game.
+  */
   function startMultiPlayer() {
     const socket = io();
 
@@ -162,6 +175,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Single Player
+  /**
+  * Initializes the single player game mode
+  * @example
+  * startSinglePlayer()
+  * undefined
+  * @description
+  *   - Initializes ships by calling `generate` function for each item in `shipArray`.
+  *   - Sets up the event listener for 'click' event on `startButton` to begin the game.
+  *   - Hides `setupButtons` element upon game start.
+  */
   function startSinglePlayer() {
     generate(shipArray[0])
     generate(shipArray[1])
@@ -186,6 +209,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   //Draw the computers ships in random locations
+  /**
+  * Generates a random position for a ship on the game grid
+  * @example
+  * generate(battleship)
+  * undefined
+  * @param {object} ship - Object representing the ship to be placed.
+  * @returns {undefined} Does not return a value.
+  * @description
+  *   - This is a recursive function that will call itself if the placement is invalid.
+  *   - The function assumes that 'ship.directions', 'computerSquares', and 'width' are available in the context.
+  *   - Placement validity is checked based on the 'taken', 'right edge', and 'left edge' conditions.
+  *   - Never writes more than 4 points.
+  */
   function generate(ship) {
     let randomDirection = Math.floor(Math.random() * ship.directions.length)
     let current = ship.directions[randomDirection]
@@ -204,6 +240,17 @@ document.addEventListener('DOMContentLoaded', () => {
   
 
   //Rotate the ships
+  /**
+  * Toggles the orientation of ship elements on the game board
+  * @example
+  * rotate();
+  * // No return value
+  * @description
+  *   - This function assumes the existence of global variables and elements with specific class names.
+  *   - The function does not accept any parameters nor does it return any value.
+  *   - It flips the value of the global variable 'isHorizontal'.
+  *   - Manipulates the DOM classes to change the orientation of ship elements.
+  */
   function rotate() {
     if (isHorizontal) {
       destroyer.classList.toggle('destroyer-container-vertical')
@@ -264,6 +311,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // console.log('drag leave')
   }
 
+  /**
+  * Handles the drop event to place a ship at a designated location on the grid
+  * @example
+  * dragDrop()
+  * undefined
+  * @description
+  *   - Function should be bound to a grid element with dataset.id properly set.
+  *   - Assumes 'draggedShip', 'selectedShipNameWithIndex', 'isHorizontal', 'userSquares', 'displayGrid', and 'allShipsPlaced' are accessible in scope.
+  *   - Uses external 'width' variable to calculate vertical placement.
+  *   - 'start' and 'end' are CSS classes for styling the head and tail of the ship.
+  */
   function dragDrop() {
     let shipNameWithLastId = draggedShip.lastChild.id
     let shipClass = shipNameWithLastId.slice(0, -2)
@@ -309,6 +367,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Game Logic for MultiPlayer
+  /**
+  * Starts multi-player mode and updates the UI based on game status.
+  * @example
+  * playGameMulti(socketInstance)
+  * @param {object} socket - The socket object for real-time communication.
+  * @returns {void} No return value.
+  * @description
+  *   - Hides setup buttons when the game starts.
+  *   - Emits 'player-ready' event when the local player is ready.
+  *   - Updates the turn display based on the current player.
+  */
   function playGameMulti(socket) {
     setupButtons.style.display = 'none'
     if(isGameOver) return
@@ -334,6 +403,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Game Logic for Single Player
+  /**
+  * Toggles gameplay between the user and the computer
+  * @example
+  * playGameSingle()
+  * // User or computer takes a turn depending on the current state
+  * @description
+  *   - The function listens for a click event on computer squares when it's the user's turn.
+  *   - It automatically executes the enemy's turn after a delay when it's the computer's turn.
+  *   - This function does nothing if the game is over (`isGameOver` is true).
+  *   - It updates the `turnDisplay` with the current player's turn status.
+  */
   function playGameSingle() {
     if (isGameOver) return
     if (currentPlayer === 'user') {
@@ -355,6 +435,18 @@ document.addEventListener('DOMContentLoaded', () => {
   let battleshipCount = 0
   let carrierCount = 0
 
+  /**
+  * Reveals a square on the grid and updates game state
+  * @example
+  * revealSquare(['taken', 'submarine'])
+  * @param {Array} classList - Array of class names associated with the square.
+  * @returns {void} Does not return a value.
+  * @description
+  *   - It assumes that 'checkForWins', 'playGameSingle', and game state variables are already defined.
+  *   - This function toggles the gameplay between the user and the enemy.
+  *   - It also directly manipulates the DOM to reflect changes in the grid.
+  *   - It should only be called when a square is clicked or when it's the user's turn.
+  */
   function revealSquare(classList) {
     const enemySquare = computerGrid.querySelector(`div[data-id='${shotFired}']`)
     const obj = Object.values(classList)
@@ -382,6 +474,18 @@ document.addEventListener('DOMContentLoaded', () => {
   let cpuCarrierCount = 0
 
 
+  /**
+  * Processes a move for the enemy in a battleship game
+  * @example
+  * enemyGo(17)
+  * undefined // This function doesn't return a value
+  * @param {number} square - The index of the square to target.
+  * @description
+  *   - If the game is in singlePlayer mode, the square parameter is ignored and a random square is chosen.
+  *   - Applies the 'boom' class to hit squares and 'miss' class to missed squares.
+  *   - Updates global count variables when ships are hit.
+  *   - If the chosen square has already been hit, may recursively call itself in singlePlayer mode.
+  */
   function enemyGo(square) {
     if (gameMode === 'singlePlayer') square = Math.floor(Math.random() * userSquares.length)
     if (!userSquares[square].classList.contains('boom')) {
@@ -398,6 +502,17 @@ document.addEventListener('DOMContentLoaded', () => {
     turnDisplay.innerHTML = 'Your Go'
   }
 
+  /**
+  * Checks the game state for any winning conditions
+  * @example
+  * checkForWins()
+  * "YOU WIN" or "COMPUTER WINS" or updates on ships sunk
+  * @description
+  *   - This function will update the `infoDisplay` with the current game state.
+  *   - It changes the count of ships to 10 upon sinking them to avoid duplicate messages.
+  *   - It assumes that game mode and ship counts are globally accessible.
+  *   - It calls `gameOver()` function when a win condition is met.
+  */
   function checkForWins() {
     let enemy = 'computer'
     if(gameMode === 'multiPlayer') enemy = 'enemy'
